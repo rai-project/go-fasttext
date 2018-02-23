@@ -8,46 +8,47 @@ package fasttext
 import "C"
 
 import (
-  "unsafe"
+	"encoding/json"
+	"unsafe"
 )
 
-type modelHandle struct {
-  path string 
-  handle C.FastTextHandle
+type Model struct {
+	path   string
+	handle C.FastTextHandle
 }
 
-func newModel(path string) *modelHandle {
+func Open(path string) *Model {
 	cpath := C.CString(path)
-  defer C.free(unsafe.Pointer(cpath))
-  
-  return &modelHandle{
-    path: path,
-    handle: C.NewHandle(cpath),
-  }
+	defer C.free(unsafe.Pointer(cpath))
+
+	return &Model{
+		path:   path,
+		handle: C.NewHandle(cpath),
+	}
 }
 
-func (handle * modelHandle) Close() error {
-  if handle == nil {
-    return nil
-  }
-  C.DeleteHandle(handle.handle)
-  return nil
+func (handle *Model) Close() error {
+	if handle == nil {
+		return nil
+	}
+	C.DeleteHandle(handle.handle)
+	return nil
 }
 
-func (handle * modelHandle) Predict(query string) (Predictions, error) {
+func (handle *Model) Predict(query string) (Predictions, error) {
 	cquery := C.CString(query)
-  defer C.free(unsafe.Pointer(cquery))
+	defer C.free(unsafe.Pointer(cquery))
 
-  r := C.Predict(handle.handle, cquery);
+	r := C.Predict(handle.handle, cquery)
 
 	defer C.free(unsafe.Pointer(r))
-  js := C.GoString(r)
-  
+	js := C.GoString(r)
+
 	predictions := []Prediction{}
 	err := json.Unmarshal([]byte(js), &predictions)
 	if err != nil {
 		return nil, err
-  }
-  
+	}
+
 	return predictions, nil
-} 
+}

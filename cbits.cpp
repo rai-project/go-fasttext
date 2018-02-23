@@ -52,7 +52,7 @@ void DeleteHandle(FastTextHandle handle) {
   }
 }
 
-void Train(FastTextHandle handle) {
+void Train(FastTextHandle handle ) {
   auto model = bit_cast<fasttext::FastText *>(handle);
   return;
 }

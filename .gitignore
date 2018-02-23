@@ -686,3 +686,6 @@ paket-files/
 # should be stored in the .pubxml.user file.
 
 # End of https://www.gitignore.io/api/go,vim,c++,java,cuda,python,eclipse,intellij,sublimetext,visualstudio,visualstudiocode
+
+
+main
