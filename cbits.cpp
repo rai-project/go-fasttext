@@ -52,11 +52,6 @@ void DeleteHandle(FastTextHandle handle) {
   }
 }
 
-void Train(FastTextHandle handle ) {
-  auto model = bit_cast<fasttext::FastText *>(handle);
-  return;
-}
-
 char *Predict(FastTextHandle handle, char *query) {
   auto model = bit_cast<fasttext::FastText *>(handle);
 

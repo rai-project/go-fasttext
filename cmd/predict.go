@@ -5,6 +5,7 @@ import (
 
 	"github.com/Unknwon/com"
 	"github.com/k0kubun/pp"
+	fasttext "github.com/rai-project/go-fasttext"
 	"github.com/spf13/cobra"
 )
 
@@ -18,14 +19,18 @@ var predictCmd = &cobra.Command{
 	Short: "Perform prediction",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		pp.Sprintf("fdafsda")
 		if !com.IsFile(modelPath) {
-			fmt.Sprintf("the file %s does not exist", modelPath)
+			fmt.Println("the file %s does not exist", modelPath)
 			return
 		}
-		// model := fasttext.Open(modelPath)
-		query := args[1]
-		pp.Println(query)
+		model := fasttext.Open(modelPath)
+		defer model.Close()
+		preds, err := model.Predict(args[0])
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		pp.Println(preds)
 	},
 }
 
