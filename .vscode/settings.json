@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.mc": "cpp",
+        "*.cu": "cpp",
+        "*.m": "mathematica",
+        "*.mt": "mathematica",
+        "*.hpp": "cpp",
+        "*.cuh": "cuda",
+        "__locale": "cpp",
+        "ios": "cpp",
+        "memory": "cpp",
+        "utility": "cpp"
+    }
+}
