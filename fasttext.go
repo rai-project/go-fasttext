@@ -12,13 +12,20 @@ import (
 	"unsafe"
 )
 
+// A model object. Effectively a wrapper
+// around the C fasttext handle
 type Model struct {
 	path   string
 	handle C.FastTextHandle
 }
 
+// Opens a model from a path and returns a model
+// object
 func Open(path string) *Model {
+	// create a C string from the Go string
 	cpath := C.CString(path)
+	// you have to delete the converted string
+	// See https://github.com/golang/go/wiki/cgo
 	defer C.free(unsafe.Pointer(cpath))
 
 	return &Model{
@@ -27,6 +34,7 @@ func Open(path string) *Model {
 	}
 }
 
+// Closes a model handle
 func (handle *Model) Close() error {
 	if handle == nil {
 		return nil
@@ -35,15 +43,21 @@ func (handle *Model) Close() error {
 	return nil
 }
 
+// Performs model prediction
 func (handle *Model) Predict(query string) (Predictions, error) {
 	cquery := C.CString(query)
 	defer C.free(unsafe.Pointer(cquery))
 
+	// Call the Predict function defined in cbits.cpp
+	// passing in the model handle and the query string
 	r := C.Predict(handle.handle, cquery)
-
+	// the C code returns a c string which we need to
+	// convert to a go string
 	defer C.free(unsafe.Pointer(r))
 	js := C.GoString(r)
 
+	// unmarshal the json results into the predictions
+	// object. See https://blog.golang.org/json-and-go
 	predictions := []Prediction{}
 	err := json.Unmarshal([]byte(js), &predictions)
 	if err != nil {
