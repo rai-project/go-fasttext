@@ -57,6 +57,7 @@ void Vector::addRow(const Matrix& A, int64_t i) {
   assert(i >= 0);
   assert(i < A.size(0));
   assert(size() == A.size(1));
+  // std::cout << data_[0] << std::endl;
   for (int64_t j = 0; j < A.size(1); j++) {
     data_[j] += A.at(i, j);
   }

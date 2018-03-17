@@ -22,7 +22,7 @@ class QMatrix;
 
 class Vector {
 
-  protected:
+  public:
     std::vector<real> data_;
 
   public:

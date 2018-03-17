@@ -10,35 +10,35 @@ import (
 )
 
 var (
-	modelPath string
+	unsupervisedModelPath string
 )
 
 // predictCmd represents the predict command
-var predictCmd = &cobra.Command{
-	Use:   "predict -m [path_to_model] [query]",
-	Short: "Perform prediction on a query using an input model",
+var analogyCmd = &cobra.Command{
+	Use:   "analogy -m [path_to_model]",
+	Short: "Perform word analogy on a query using an input model",
 	Args:  cobra.ExactArgs(1), // make sure that there is only one argument being passed in
 	Run: func(cmd *cobra.Command, args []string) {
-		if !com.IsFile(modelPath) {
-			fmt.Println("the file %s does not exist", modelPath)
+		if !com.IsFile(unsupervisedModelPath) {
+			fmt.Println("the file %s does not exist", unsupervisedModelPath)
 			return
 		}
 
 		// create a model object
-		model := fasttext.Open(modelPath)
+		model := fasttext.Open(unsupervisedModelPath)
 		// close the model at the end
 		defer model.Close()
 		// perform the prediction
-		preds, err := model.Predict(args[0])
+		analogies, err := model.Analogy(args[0])
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		pp.Println(preds)
+		pp.Println(analogies)
 	},
 }
 
 func init() {
-	predictCmd.Flags().StringVarP(&modelPath, "model", "m", "", "path to the fasttext model")
-	rootCmd.AddCommand(predictCmd)
+	analogyCmd.Flags().StringVarP(&unsupervisedModelPath, "model", "m", "", "path to the fasttext model")
+	rootCmd.AddCommand(analogyCmd)
 }

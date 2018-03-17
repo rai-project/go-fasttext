@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <istream>
 #include <memory>
@@ -59,15 +58,45 @@ char *Predict(FastTextHandle handle, char *query) {
   std::istream in(&sbuf);
 
   std::vector<std::pair<fasttext::real, std::string>> predictions;
-  model->predict(in, 1, predictions);
+  model->predict(in, 4, predictions);
 
   size_t ii = 0;
   auto res = json::array();
   for (const auto it : predictions) {
+    float p = std::exp(it.first);
     res.push_back({
         {"index", ii++},
-        {"probability", it.first},
+        {"probability", p},
         {"label", it.second},
+    });
+  }
+
+  return strdup(res.dump().c_str());
+}
+
+char *Analogy(FastTextHandle handle, char *query) {
+  auto model = bit_cast<fasttext::FastText *>(handle);
+
+  model->analogies(10);
+
+  size_t ii = 0;
+  auto res = json::array();
+
+  return strdup(res.dump().c_str());
+}
+
+char *Wordvec(FastTextHandle handle, char *query) {
+  auto model = bit_cast<fasttext::FastText *>(handle);
+
+  fasttext::Vector vec(model->getDimension());
+  // fasttext::Matrix wordVectors(model->dict_->nwords(), model->getDimension());
+  // model->precomputeWordVectors(wordVectors);
+  model->getWordVector(vec, query);
+
+  auto res = json::array();
+  for (int i = 0; i < vec.data_.size(); i++) {
+    res.push_back({
+        {"probability",vec.data_[i]},
     });
   }
 

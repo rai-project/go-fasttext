@@ -151,6 +151,7 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k, real threshold
   if (args_->model != model_name::sup) {
     throw std::invalid_argument("Model needs to be supervised for prediction!");
   }
+
   heap.reserve(k + 1);
   computeHidden(input, hidden);
   if (args_->loss == loss_name::hs) {
@@ -177,12 +178,14 @@ void Model::findKBest(
   Vector& hidden, Vector& output
 ) const {
   computeOutputSoftmax(hidden, output);
+
   for (int32_t i = 0; i < osz_; i++) {
     if (output[i] < threshold) continue;
     if (heap.size() == k && std_log(output[i]) < heap.front().first) {
       continue;
     }
     heap.push_back(std::make_pair(std_log(output[i]), i));
+    // heap.push_back(std::make_pair(output[i], i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);

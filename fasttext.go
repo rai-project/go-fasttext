@@ -22,6 +22,7 @@ type Model struct {
 // Opens a model from a path and returns a model
 // object
 func Open(path string) *Model {
+	// fmt.Println("something")
 	// create a C string from the Go string
 	cpath := C.CString(path)
 	// you have to delete the converted string
@@ -65,4 +66,38 @@ func (handle *Model) Predict(query string) (Predictions, error) {
 	}
 
 	return predictions, nil
+}
+
+func (handle *Model) Analogy(query string) (Analogs, error) {
+	cquery := C.CString(query)
+	defer C.free(unsafe.Pointer(cquery))
+
+	r := C.Analogy(handle.handle, cquery)
+	defer C.free(unsafe.Pointer(r))
+	js := C.GoString(r)
+
+	analogies := []Analog{}
+	err := json.Unmarshal([]byte(js), &analogies)
+	if err != nil {
+		return nil, err
+	}
+
+	return analogies, nil
+}
+
+func (handle *Model) Wordvec(query string) (Vectors, error) {
+	cquery := C.CString(query)
+	defer C.free(unsafe.Pointer(cquery))
+
+	r := C.Wordvec(handle.handle, cquery)
+	defer C.free(unsafe.Pointer(r))
+	js := C.GoString(r)
+
+	vectors := []Vector{}
+	err := json.Unmarshal([]byte(js), &vectors)
+	if err != nil {
+		return nil, err
+	}
+
+	return vectors, nil
 }
